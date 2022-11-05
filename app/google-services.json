@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "680124450570",
+    "project_id": "uber-da067",
+    "storage_bucket": "uber-da067.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:680124450570:android:a9c9c25eca805136621cf3",
+        "android_client_info": {
+          "package_name": "com.felixdeveloperand.uber"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "680124450570-4i3lsvk7j9bi7tq1f0n7c5jfp5eqfqaj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtK7OrY3wlROLROVCFll8rBCnpmS46Ows"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "680124450570-4i3lsvk7j9bi7tq1f0n7c5jfp5eqfqaj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
