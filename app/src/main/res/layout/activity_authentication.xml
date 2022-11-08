@@ -5,7 +5,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/design_default_color_primary"
     tools:context=".SelectOptionAuthActivity">
+
+    <include android:id="@+id/toolbarcito" layout="@layout/actionbar_toolbar"/>
+
 
 
     <LinearLayout
@@ -34,39 +38,35 @@
             />
 
         <LinearLayout
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="bottom"
+            android:gravity="top"
             android:layout_margin="20dp"
             >
 
             <Button
-                android:layout_width="0dp"
-                android:layout_weight="1"
+
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:background="@drawable/rounded_button"
                 android:backgroundTint="@color/white"
-                android:text="SOY CONDUCTOR"/>
+                android:text="YA TENGO CUENTA"/>
 
 
             <Button
-                android:layout_width="0dp"
-                android:layout_weight="1"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:background="@drawable/rounded_button"
                 android:backgroundTint="@color/black"
-                android:text="SOY CLIENTE"/>
+                android:text="REGISTRARME"/>
 
         </LinearLayout>
 
 
-
-
     </LinearLayout>
-
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
