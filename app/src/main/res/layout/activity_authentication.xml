@@ -11,7 +11,6 @@
     <include android:id="@+id/toolbarcito" layout="@layout/actionbar_toolbar"/>
 
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -29,7 +28,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Uber Clone es un aplicacion similar a Uber"
+            android:text="Selecciona una opcion"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:layout_margin="20sp"
@@ -46,7 +45,7 @@
             >
 
             <Button
-
+                android:id="@+id/btnGoToLogin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
@@ -56,6 +55,7 @@
 
 
             <Button
+                android:id="@+id/btnGoToRegister"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
