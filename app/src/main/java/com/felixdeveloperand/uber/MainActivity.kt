@@ -1,14 +1,15 @@
 package com.felixdeveloperand.uber
 
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.felixdeveloperand.uber.databinding.ActivityMainBinding
-import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var mPref: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -16,10 +17,26 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        mPref = applicationContext.getSharedPreferences("typeUser", MODE_PRIVATE)
+        val editor:SharedPreferences.Editor =  mPref.edit()
+
+
         binding.btnIamClient.setOnClickListener {
-            val intent = Intent(this@MainActivity, SelectOptionAuthActivity::class.java)
-            startActivity(intent)
+            editor.putString("user", "client")
+            editor.apply()
+            startActivity(Intent(this, SelectOptionAuthActivity::class.java).apply {
+                putExtra("key", "android_parameter")
+            })
         }
-        val db = FirebaseFirestore.getInstance()
+        binding.btnIamDriver.setOnClickListener {
+            editor.putString("user", "driver")
+            editor.apply()
+            startActivity(Intent(this, SelectOptionAuthActivity::class.java).apply {
+                putExtra("key", "android_parameter")
+            })
+        }
+
+
     }
+
 }

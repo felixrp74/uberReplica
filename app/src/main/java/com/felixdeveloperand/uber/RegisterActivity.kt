@@ -1,17 +1,26 @@
-package com.felixdeveloperand.uber;
+package com.felixdeveloperand.uber
 
-import androidx.appcompat.app.AppCompatActivity;
+import android.content.SharedPreferences
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import com.felixdeveloperand.uber.databinding.ActivityRegisterBinding
+import com.felixdeveloperand.uber.util.showToast
 
-import android.os.Bundle;
+class RegisterActivity : AppCompatActivity() {
 
-public class RegisterActivity extends AppCompatActivity {
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
+    private lateinit var binding: ActivityRegisterBinding
+    private lateinit var mPref: SharedPreferences
 
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityRegisterBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        mPref = applicationContext.getSharedPreferences("typeUser", MODE_PRIVATE)
+
+        val selectedUser = mPref.getString("user","")
+        showToast(selectedUser.toString())
 
     }
 }
