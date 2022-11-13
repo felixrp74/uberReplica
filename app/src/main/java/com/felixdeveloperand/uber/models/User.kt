@@ -1,4 +1,4 @@
-package com.felixdeveloperand.uber
+package com.felixdeveloperand.uber.models
 
 import com.google.firebase.database.IgnoreExtraProperties
 

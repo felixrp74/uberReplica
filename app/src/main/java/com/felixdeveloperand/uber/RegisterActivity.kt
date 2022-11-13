@@ -4,6 +4,10 @@ import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.felixdeveloperand.uber.databinding.ActivityRegisterBinding
+import com.felixdeveloperand.uber.models.Client
+import com.felixdeveloperand.uber.models.User
+import com.felixdeveloperand.uber.provider.AuthProvider
+import com.felixdeveloperand.uber.provider.ClientProvider
 import com.felixdeveloperand.uber.util.showToast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
@@ -14,8 +18,9 @@ class RegisterActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRegisterBinding
     private lateinit var mPref: SharedPreferences
-    private lateinit var mDatabase: DatabaseReference
-    private lateinit var mAuth: FirebaseAuth
+
+    private lateinit var mAuthProvider: AuthProvider
+    private lateinit var mClientProvider: ClientProvider
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -25,31 +30,22 @@ class RegisterActivity : AppCompatActivity() {
 
         mPref = applicationContext.getSharedPreferences("typeUser", MODE_PRIVATE)
 
-        mAuth = FirebaseAuth.getInstance()
-        mDatabase = Firebase.database.reference
+        mAuthProvider = AuthProvider()
+        mClientProvider = ClientProvider()
 
         binding.btnRegister.setOnClickListener {
-            //writeNewUser("jgur7862", "camilo", "cesto@gmail.com.pe")
-            registerUser()
-
+            clickRegisterUser()
         }
-
     }
 
-    private fun registerUser() {
+    private fun clickRegisterUser() {
         val name = binding.textInputName.text.toString()
         val email = binding.textInputEmail.text.toString()
         val pass = binding.textInputPassword.text.toString()
 
         if(name.isNotEmpty() && email.isNotEmpty() && pass.isNotEmpty()){
             if(pass.length >= 6){
-                mAuth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener { task ->
-                    if (task.isSuccessful){
-                        saveUser(name, email)
-                    }else{
-                        showToast("Could not register a user. ${task.exception}")
-                    }
-                }
+                register(email,pass)
             }else{
                 showToast("The password must be more than 6 characters.")
             }
@@ -58,23 +54,44 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveUser(name: String, email: String) {
+    private fun register(email: String, pass: String) {
+        mAuthProvider.register(email, pass).addOnCompleteListener { task ->
+            if (task.isSuccessful){
+                val uid:String = FirebaseAuth.getInstance().currentUser!!.uid
+                createClient(Client(uid,email,pass))
+            }else{
+                showToast("Could not register a user. ${task.exception}")
+            }
+        }
+    }
+
+    private fun createClient(client: Client) {
+        mClientProvider.createClient(client).addOnCompleteListener {
+            if (it.isSuccessful){
+                showToast("The register have been successful")
+            }else{
+                showToast("Could not create a client")
+            }
+        }
+    }
+/*
+    private fun saveUser(uid:String,name: String, email: String) {
         val selectedUser = mPref.getString("user","")
-        //showToast(selectedUser.toString())
+
         val user = User(name, email)
 
         if (selectedUser.equals("driver")){
-            mDatabase.child("Users").child("Drivers").push().setValue(user)
+            mDatabase.child("Users").child("Drivers").child(uid).setValue(user)
                 .addOnCompleteListener {
                     if (it.isSuccessful){
                         showToast("Successful registered user.")
                     }else{
-                        showToast("Failed , llego hasta mDatabase.")
+                        showToast("Failed, llego hasta mDatabase.")
                     }
                 }
 
         }else if(selectedUser.equals("client")){
-            mDatabase.child("Users").child("Clients").push().setValue(user)
+            mDatabase.child("Users").child("Clients").child(uid).setValue(user)
                 .addOnCompleteListener {
                     if (it.isSuccessful){
                         showToast("Successful registered user.")
@@ -84,14 +101,6 @@ class RegisterActivity : AppCompatActivity() {
                 }
         }
     }
-/*
-    fun writeNewUser(userId: String, name: String, email: String) {
-        val user = User(name, email)
-
-        mDatabase.child("users").child(userId).setValue(user)
-    }
 
  */
-
-
 }
