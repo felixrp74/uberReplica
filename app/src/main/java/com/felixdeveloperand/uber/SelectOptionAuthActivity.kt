@@ -17,18 +17,26 @@ class SelectOptionAuthActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         //setSupportActionBar(binding.toolbarcito.toolbar)
+        login()
+        register()
 
-        binding.btnGoToLogin.setOnClickListener {
+    }
 
-                startActivity(Intent(this@SelectOptionAuthActivity, LoginActivity::class.java).apply {
-                    putExtra("key","inteligente")
-                })
-        }
+    private fun register() {
         binding.btnGoToRegister.setOnClickListener {
 
-                startActivity(Intent(this@SelectOptionAuthActivity, RegisterActivity::class.java).apply {
-                    putExtra("key","inteligente")
-                })
+            startActivity(Intent(this@SelectOptionAuthActivity, RegisterActivity::class.java).apply {
+                putExtra("key","inteligente")
+            })
+        }
+    }
+
+    private fun login() {
+        binding.btnGoToLogin.setOnClickListener {
+
+            startActivity(Intent(this@SelectOptionAuthActivity, LoginActivity::class.java).apply {
+                putExtra("key","inteligente")
+            })
         }
     }
 }
