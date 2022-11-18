@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Uber</string>
+    <string name="marca_del_vehiculo">Marca del vehiculo</string>
+    <string name="placa_del_vehiculo">Placa del vehiculo</string>
 </resources>

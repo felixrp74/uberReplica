@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/design_default_color_primary"
-    tools:context=".SelectOptionAuthActivity">
+    tools:context=".activities.SelectOptionAuthActivity">
 
     <include android:id="@+id/toolbarcito" layout="@layout/actionbar_toolbar"/>
 

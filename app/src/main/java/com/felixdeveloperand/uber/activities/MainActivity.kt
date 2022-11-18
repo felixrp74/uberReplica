@@ -1,4 +1,4 @@
-package com.felixdeveloperand.uber
+package com.felixdeveloperand.uber.activities
 
 import android.content.Intent
 import android.content.SharedPreferences
@@ -25,14 +25,14 @@ class MainActivity : AppCompatActivity() {
             editor.putString("user", "client")
             editor.apply()
             startActivity(Intent(this, SelectOptionAuthActivity::class.java).apply {
-                putExtra("key", "android_parameter")
+                putExtra("key", "client")
             })
         }
         binding.btnIamDriver.setOnClickListener {
             editor.putString("user", "driver")
             editor.apply()
             startActivity(Intent(this, SelectOptionAuthActivity::class.java).apply {
-                putExtra("key", "android_parameter")
+                putExtra("key", "driver")
             })
         }
 

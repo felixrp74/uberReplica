@@ -1,18 +1,14 @@
-package com.felixdeveloperand.uber
+package com.felixdeveloperand.uber.activities.client
 
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.felixdeveloperand.uber.databinding.ActivityRegisterBinding
 import com.felixdeveloperand.uber.models.Client
-import com.felixdeveloperand.uber.models.User
 import com.felixdeveloperand.uber.provider.AuthProvider
 import com.felixdeveloperand.uber.provider.ClientProvider
 import com.felixdeveloperand.uber.util.showToast
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -74,33 +70,4 @@ class RegisterActivity : AppCompatActivity() {
             }
         }
     }
-/*
-    private fun saveUser(uid:String,name: String, email: String) {
-        val selectedUser = mPref.getString("user","")
-
-        val user = User(name, email)
-
-        if (selectedUser.equals("driver")){
-            mDatabase.child("Users").child("Drivers").child(uid).setValue(user)
-                .addOnCompleteListener {
-                    if (it.isSuccessful){
-                        showToast("Successful registered user.")
-                    }else{
-                        showToast("Failed, llego hasta mDatabase.")
-                    }
-                }
-
-        }else if(selectedUser.equals("client")){
-            mDatabase.child("Users").child("Clients").child(uid).setValue(user)
-                .addOnCompleteListener {
-                    if (it.isSuccessful){
-                        showToast("Successful registered user.")
-                    }else{
-                        showToast("Failed , llego hasta mDatabase.")
-                    }
-                }
-        }
-    }
-
- */
 }
