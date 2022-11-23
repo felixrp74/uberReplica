@@ -1,5 +1,6 @@
 package com.felixdeveloperand.uber.activities.client
 
+import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -64,7 +65,12 @@ class RegisterActivity : AppCompatActivity() {
     private fun createClient(client: Client) {
         mClientProvider.createClient(client).addOnCompleteListener {
             if (it.isSuccessful){
-                showToast("The register have been successful")
+                showToast("T he register have been successful")
+                Intent(this@RegisterActivity, MapClientActivity::class.java).apply {
+                    Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(this)
+                }
+
             }else{
                 showToast("Could not create a client")
             }

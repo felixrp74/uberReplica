@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.felixdeveloperand.uber.activities.client.RegisterActivity
-import com.felixdeveloperand.uber.activities.driver.PruebaActivity
+import com.felixdeveloperand.uber.activities.driver.MapDriverActivity
 import com.felixdeveloperand.uber.activities.driver.RegisterDriverActivity
 import com.felixdeveloperand.uber.databinding.ActivityAuthenticationBinding
 import com.felixdeveloperand.uber.util.showToast
@@ -33,52 +33,24 @@ class SelectOptionAuthActivity : AppCompatActivity() {
         binding.btnGoToRegister.setOnClickListener {
 
             val decision: String = mPref.getString("user", "").toString()
-            showToast(decision)
+            showToast("LA VARIABLE DECISION = $decision")
 
             when (decision) {
                 "driver" -> {
-                    showToast("DRIVER")
-                    val intento = Intent(this@SelectOptionAuthActivity, PruebaActivity::class.java)
-                    startActivity(intento)
-/*                    startActivity(Intent(
-                        this,
-                        PruebaActivity::class.java
-                    ).apply {
-                        putExtra("key", "inteligente")
-                    })
-
- */
+                    showToast("GO TO DRIVER")
+                    startActivity(Intent(
+                        this@SelectOptionAuthActivity,
+                        RegisterDriverActivity::class.java
+                    ))
                 }
                 "client" -> {
-                    showToast("CLIENT")
+                    showToast("GO TO CLIENT")
                     startActivity(Intent(
                         this@SelectOptionAuthActivity,
                         RegisterActivity::class.java
-                    ).apply {
-                        putExtra("key", "inteligente")
-                    })
+                    ))
                 }
             }
-
-//            if (decision == "driver") {
-//
-//                showToast("DRIVER")
-//
-//
-//
-//            } else if (decision == "client") {
-//                showToast("CLIENT")
-//                startActivity(Intent(
-//                    this@SelectOptionAuthActivity,
-//                    RegisterActivity::class.java
-//                ).apply {
-//                    putExtra("key", "inteligente")
-//                })
-//
-//            } else {
-//                showToast("No driver No client. SelectOptionActivity.kt")
-//            }
-
         }
     }
 

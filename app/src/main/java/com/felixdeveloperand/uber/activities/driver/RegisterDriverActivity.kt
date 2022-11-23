@@ -1,7 +1,10 @@
 package com.felixdeveloperand.uber.activities.driver
 
+import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.felixdeveloperand.uber.activities.client.MapClientActivity
 import com.felixdeveloperand.uber.databinding.ActivityRegisterDriverBinding
 import com.felixdeveloperand.uber.models.Driver
 import com.felixdeveloperand.uber.provider.AuthProvider
@@ -13,6 +16,7 @@ class RegisterDriverActivity : AppCompatActivity() {
 
 
     private lateinit var binding: ActivityRegisterDriverBinding
+    private lateinit var mPref:SharedPreferences
 
 
     private lateinit var mAuthProvider: AuthProvider
@@ -24,6 +28,8 @@ class RegisterDriverActivity : AppCompatActivity() {
         binding = ActivityRegisterDriverBinding.inflate(layoutInflater)
         setContentView(binding.root)
 /*
+        mPref = applicationContext.getSharedPreferences("typeUser", MODE_PRIVATE)
+
         mAuthProvider = AuthProvider()
         mDriverProvider = DriverProvider()
 
@@ -35,6 +41,7 @@ class RegisterDriverActivity : AppCompatActivity() {
     }
 
     private fun clickRegisterUser() {
+/*
         val name = binding.textInputName.text.toString()
         val email = binding.textInputEmail.text.toString()
         val vehicleBrand = binding.textInputVehicleBrand.text.toString()
@@ -51,6 +58,8 @@ class RegisterDriverActivity : AppCompatActivity() {
         }else{
             showToast("Input the all fields, please.")
         }
+
+ */
     }
 
     private fun register(
@@ -74,6 +83,10 @@ class RegisterDriverActivity : AppCompatActivity() {
         mDriverProvider.createDriver(driver).addOnCompleteListener {
             if (it.isSuccessful){
                 showToast("The register have been successful")
+                Intent(this@RegisterDriverActivity, MapDriverActivity::class.java).apply {
+                    Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(this)
+                }
             }else{
                 showToast("Could not create a client")
             }
