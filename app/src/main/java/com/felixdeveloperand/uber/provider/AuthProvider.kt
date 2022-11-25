@@ -14,6 +14,9 @@ class AuthProvider {
     fun login(email:String, pass:String): Task<AuthResult> {
         return mAuth.signInWithEmailAndPassword(email,pass)
     }
+    fun logout(){
+        mAuth.signOut()
+    }
 
 
 }

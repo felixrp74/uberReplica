@@ -4,7 +4,13 @@ import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.felixdeveloperand.uber.activities.client.MapClientActivity
+import com.felixdeveloperand.uber.activities.client.RegisterActivity
+import com.felixdeveloperand.uber.activities.driver.MapDriverActivity
+import com.felixdeveloperand.uber.activities.driver.RegisterDriverActivity
 import com.felixdeveloperand.uber.databinding.ActivityMainBinding
+import com.felixdeveloperand.uber.util.showToast
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
 
@@ -37,6 +43,31 @@ class MainActivity : AppCompatActivity() {
         }
 
 
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (FirebaseAuth.getInstance().currentUser != null){
+            val user = mPref.getString("user","")
+            when (user) {
+                "driver" -> {
+                    showToast("GO TO DRIVER")
+
+                    Intent(this@MainActivity, MapDriverActivity::class.java).apply {
+                        Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                        startActivity(this)
+                    }
+                }
+                "client" -> {
+                    showToast("GO TO CLIENT")
+
+                    Intent(this@MainActivity, MapClientActivity::class.java).apply {
+                        Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                        startActivity(this)
+                    }
+                }
+            }
+        }
     }
 
 }
