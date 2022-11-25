@@ -8,15 +8,10 @@ import com.google.firebase.ktx.Firebase
 
 class DriverProvider {
 
-    private lateinit var mDatabase: DatabaseReference
-
-    fun clientProvider(){
-        mDatabase = Firebase.database.reference.child("Users").child("Drivers")
-    }
+    private var mDatabase: DatabaseReference = Firebase.database.reference
+        .child("Users").child("Drivers")
 
     fun createDriver(driver: Driver): Task<Void> {
         return mDatabase.child(driver.id).setValue(driver)
     }
-
-
 }

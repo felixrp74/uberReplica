@@ -5,7 +5,6 @@ import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.felixdeveloperand.uber.activities.client.RegisterActivity
-import com.felixdeveloperand.uber.activities.driver.MapDriverActivity
 import com.felixdeveloperand.uber.activities.driver.RegisterDriverActivity
 import com.felixdeveloperand.uber.databinding.ActivityAuthenticationBinding
 import com.felixdeveloperand.uber.util.showToast
@@ -23,10 +22,8 @@ class SelectOptionAuthActivity : AppCompatActivity() {
 
         mPref = applicationContext.getSharedPreferences("typeUser", MODE_PRIVATE)
 
-        //setSupportActionBar(binding.toolbarcito.toolbar)
         goToRegister()
         goToLogin()
-
     }
 
     private fun goToRegister() {

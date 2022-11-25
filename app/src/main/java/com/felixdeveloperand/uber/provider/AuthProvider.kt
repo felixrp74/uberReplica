@@ -17,6 +17,4 @@ class AuthProvider {
     fun logout(){
         mAuth.signOut()
     }
-
-
 }

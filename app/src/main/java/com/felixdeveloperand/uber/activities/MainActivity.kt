@@ -5,9 +5,7 @@ import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.felixdeveloperand.uber.activities.client.MapClientActivity
-import com.felixdeveloperand.uber.activities.client.RegisterActivity
 import com.felixdeveloperand.uber.activities.driver.MapDriverActivity
-import com.felixdeveloperand.uber.activities.driver.RegisterDriverActivity
 import com.felixdeveloperand.uber.databinding.ActivityMainBinding
 import com.felixdeveloperand.uber.util.showToast
 import com.google.firebase.auth.FirebaseAuth
@@ -26,7 +24,6 @@ class MainActivity : AppCompatActivity() {
         mPref = applicationContext.getSharedPreferences("typeUser", MODE_PRIVATE)
         val editor:SharedPreferences.Editor =  mPref.edit()
 
-
         binding.btnIamClient.setOnClickListener {
             editor.putString("user", "client")
             editor.apply()
@@ -41,8 +38,6 @@ class MainActivity : AppCompatActivity() {
                 putExtra("key", "driver")
             })
         }
-
-
     }
 
     override fun onStart() {
@@ -69,5 +64,4 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
 }

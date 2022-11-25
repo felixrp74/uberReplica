@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import com.felixdeveloperand.uber.databinding.ActivityRegisterBinding
 import com.felixdeveloperand.uber.models.Client
 import com.felixdeveloperand.uber.provider.AuthProvider
@@ -52,6 +53,10 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun register(email: String, pass: String) {
+
+        binding.comoLas.visibility = View.VISIBLE
+        binding.btnRegister.visibility = View.GONE
+
         mAuthProvider.register(email, pass).addOnCompleteListener { task ->
             if (task.isSuccessful){
                 val uid:String = FirebaseAuth.getInstance().currentUser!!.uid
@@ -60,12 +65,15 @@ class RegisterActivity : AppCompatActivity() {
                 showToast("Could not register a user. ${task.exception}")
             }
         }
+
+        binding.comoLas.visibility = View.GONE
+        binding.btnRegister.visibility = View.VISIBLE
     }
 
     private fun createClient(client: Client) {
         mClientProvider.createClient(client).addOnCompleteListener {
             if (it.isSuccessful){
-                showToast("T he register have been successful")
+                showToast("The register have been successful")
                 Intent(this@RegisterActivity, MapClientActivity::class.java).apply {
                     Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                     startActivity(this)

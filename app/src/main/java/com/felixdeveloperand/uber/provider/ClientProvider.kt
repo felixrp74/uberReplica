@@ -11,9 +11,7 @@ class ClientProvider {
     private var mDatabase: DatabaseReference = Firebase.database.reference
         .child("Users").child("Clients")
 
-
     fun createClient(client: Client): Task<Void> {
         return mDatabase.child(client.id).setValue(client)
     }
-
 }

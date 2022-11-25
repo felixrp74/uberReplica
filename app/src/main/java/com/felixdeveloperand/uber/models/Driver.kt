@@ -6,5 +6,4 @@ data class Driver(
     val email: String? = null,
     val vehicleBrand:String? = null,
     val vehiclePlate:String? =null
-
 )

@@ -28,7 +28,6 @@ class LoginActivity : AppCompatActivity() {
         binding.btnLogin.setOnClickListener {
             login()
         }
-
     }
 
     override fun onStart() {
@@ -43,8 +42,7 @@ class LoginActivity : AppCompatActivity() {
         val email = binding.textInputEmail.text.toString()
         val pass = binding.textInputPassword.text.toString()
 
-
-        if(!email.isEmpty() && !pass.isEmpty()){
+        if(email.isNotEmpty() && pass.isNotEmpty()){
             if(pass.length >= 6){
 
                 val db = FirebaseFirestore.getInstance()
@@ -59,8 +57,6 @@ class LoginActivity : AppCompatActivity() {
                             Log.d(TAG, "signInWithEmail:success")
                             val user = auth.currentUser
                             //updateUI(user)
-
-
                             showToast("Authentication success.")
                         } else {
                             // If sign in fails, display a message to the user.
@@ -73,10 +69,7 @@ class LoginActivity : AppCompatActivity() {
                         binding.pbCircular.visibility = View.GONE
                         binding.btnLogin.visibility = View.VISIBLE
                     }
-
             }
         }
-
-
     }
 }
