@@ -1,13 +1,17 @@
 package com.felixdeveloperand.uber.activities.client
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Looper
+import android.telecom.TelecomManager.EXTRA_LOCATION
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.felixdeveloperand.uber.databinding.ActivityMapClientBinding
 import com.felixdeveloperand.uber.provider.AuthProvider
 import com.felixdeveloperand.uber.util.showToast
@@ -15,9 +19,9 @@ import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import java.util.concurrent.TimeUnit
 
 class MapClientActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -25,9 +29,11 @@ class MapClientActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mAuthProvider: AuthProvider
     private lateinit var mMap: GoogleMap
 
-    private lateinit var mLocationRequest: LocationRequest
-    private lateinit var mFusedLocation: FusedLocationProviderClient
-    private lateinit var mLocationCallback: LocationCallback
+    private lateinit var locationRequest: LocationRequest
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    private lateinit var locationCallback: LocationCallback
+    private var currentLocation: Location? = null
+
     val LOCATION_REQUEST_CODE = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,6 +42,7 @@ class MapClientActivity : AppCompatActivity(), OnMapReadyCallback {
         setContentView(binding.root)
 
         mAuthProvider = AuthProvider()
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
         if (ContextCompat.checkSelfPermission(this@MapClientActivity,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
@@ -58,12 +65,43 @@ class MapClientActivity : AppCompatActivity(), OnMapReadyCallback {
         val sydney = LatLng(-0.19, 151.0)
         mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
-
-        mLocationRequest = LocationRequest.create()
+/*
+        locationRequest = LocationRequest.create()
             .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
             .setInterval(1000)
             .setFastestInterval(1000)
             .setSmallestDisplacement(5.0f)
+ */
+
+        locationRequest = LocationRequest.create().apply {
+            interval = TimeUnit.SECONDS.toMillis(60)
+
+            fastestInterval = TimeUnit.SECONDS.toMillis(30)
+
+            maxWaitTime = TimeUnit.MINUTES.toMillis(2)
+
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        }
+
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
+                super.onLocationResult(locationResult)
+
+                currentLocation = locationResult.lastLocation
+/*
+                val intent = Intent(ACCESSFINE)
+                intent.putExtra(EXTRA_LOCATION, currentLocation)
+                LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(intent)
+*/
+                // Updates notification content if this service is running as a foreground
+                // service.
+                /*if (serviceRunningInForeground) {
+                    notificationManager.notify(
+                        NOTIFICATION_ID,
+                        generateNotification(currentLocation))
+                }*/
+            }
+        }
 
         startLocation()
     }
@@ -99,13 +137,21 @@ class MapClientActivity : AppCompatActivity(), OnMapReadyCallback {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
             == PackageManager.PERMISSION_GRANTED
         ) {
-            Looper.myLooper()?.let {
-                mFusedLocation.requestLocationUpdates(
-                    mLocationRequest,
-                    mLocationCallback,
+            fusedLocationProviderClient.requestLocationUpdates(
+                locationRequest,
+                locationCallback,
+                Looper.getMainLooper()
+            )
+
+            /*Looper.myLooper()?.let {
+                fusedLocationProviderClient.requestLocationUpdates(
+                    locationRequest,
+                    locationCallback,
                     it
                 )
             }
+
+             */
         }else{
             checkLocationPermissions()
         }
