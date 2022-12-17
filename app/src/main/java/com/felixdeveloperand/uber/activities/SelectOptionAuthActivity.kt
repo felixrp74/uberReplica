@@ -22,8 +22,19 @@ class SelectOptionAuthActivity : AppCompatActivity() {
 
         mPref = applicationContext.getSharedPreferences("typeUser", MODE_PRIVATE)
 
-        goToRegister()
         goToLogin()
+        goToRegister()
+    }
+
+    private fun goToLogin() {
+        binding.btnGoToLogin.setOnClickListener {
+            val decision: String = mPref.getString("user", "").toString()
+            showToast("LA VARIABLE DECISION = $decision")
+
+            startActivity(Intent(this@SelectOptionAuthActivity, LoginActivity::class.java).apply {
+                putExtra("key", decision)
+            })
+        }
     }
 
     private fun goToRegister() {
@@ -51,12 +62,4 @@ class SelectOptionAuthActivity : AppCompatActivity() {
         }
     }
 
-    private fun goToLogin() {
-        binding.btnGoToLogin.setOnClickListener {
-
-            startActivity(Intent(this@SelectOptionAuthActivity, LoginActivity::class.java).apply {
-                putExtra("key", "inteligente")
-            })
-        }
-    }
 }
