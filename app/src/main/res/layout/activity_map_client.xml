@@ -8,16 +8,18 @@
     tools:context=".activities.client.MapClientActivity">
 
     <fragment
-        android:id="@+id/map"
+        android:id="@+id/fragmentMap"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".activities.client.MapClientActivity" />
 
     <TextView
+        android:id="@+id/inteli"
+
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Request Location permission at Run time!"
+        android:text="Aun no se activado permiso de localizacion!"
         android:padding="4dp"
         android:layout_centerInParent="true"
         android:textSize="36sp"
