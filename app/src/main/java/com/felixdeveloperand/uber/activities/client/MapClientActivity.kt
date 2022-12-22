@@ -1,6 +1,8 @@
 package com.felixdeveloperand.uber.activities.client
 
 import android.Manifest
+import android.app.ActivityManager
+import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
@@ -9,8 +11,10 @@ import android.os.Looper
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
 import com.felixdeveloperand.uber.R
 import com.felixdeveloperand.uber.databinding.ActivityMapClientBinding
+import com.felixdeveloperand.uber.service.LocationService
 import com.felixdeveloperand.uber.util.showToast
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -38,20 +42,27 @@ class MapClientActivity : AppCompatActivity(), OnMapReadyCallback {
         binding = ActivityMapClientBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        binding.btnLocation.setOnClickListener {
 
-        locationCallback = object : LocationCallback() {
-            override fun onLocationResult(locationResult: LocationResult) {
-                locationResult.locations.firstOrNull()
-            }
+            if (ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this@MapClientActivity,
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                    LOCATION_REQUEST_CODE
 
-            fun onSuccess(location: Location?) {
-                location
+                )
+            }else{
+                startLocation()
             }
         }
+    }
 
-        showToast("HOLA COM ESTAS?")
-        createMapFragment()
+    private fun startLocation() {
+        TODO("Not yet implemented")
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -68,59 +79,20 @@ class MapClientActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         val favoritePlace = LatLng(28.044195,-16.5363842)
-        createMarker(favoritePlace)
 
-        startLocation()
-    }
-    private fun createMapFragment() {
-        val mapFragment = supportFragmentManager.findFragmentById(R.id.fragmentMap) as SupportMapFragment
-        mapFragment.getMapAsync(this)
-    }
-    private fun createMarker(latLng: LatLng) {
-//        val favoritePlace = LatLng(28.044195,-16.5363842)
-        map.addMarker(MarkerOptions().position(latLng).title("Mi playa favorita!"))
-        map.animateCamera(
-            CameraUpdateFactory.newLatLngZoom(latLng, 18f),
-            4000,
-            null
-        )
-    }
-    private fun startLocation(){
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-            == PackageManager.PERMISSION_GRANTED
-        ) {
-            fusedLocationProviderClient.requestLocationUpdates(
-                locationRequest,
-                locationCallback,
-                Looper.getMainLooper()
-            )
-        }else{
-            checkLocationPermissions()
-        }
     }
 
-    private fun checkLocationPermissions(){
-        if (
-            ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED
-        ){
-            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)){
-                AlertDialog.Builder(this)
-                    .setTitle("Proporciona los permisos para continuar")
-                    .setMessage("Esta app requiere permisos de ubicacion")
-                    .setPositiveButton("OK") { dialog, id ->
-                        ActivityCompat.requestPermissions(
-                            this@MapClientActivity,
-                            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_REQUEST_CODE
-                        )
+    fun isLocationServiceRunning():Boolean{
+        val activityManager: ActivityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
 
-                    }
-                    .create()
-                    .show()
-            }else{
-                ActivityCompat.requestPermissions(this@MapClientActivity,
-                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_REQUEST_CODE)
+        for ( service:ActivityManager.RunningServiceInfo in activityManager.getRunningServices(Integer.MAX_VALUE)){
+            if (LocationService::class.java.name.equals(service.service.className)){
+                if (service.foreground){
+                    return true
+                }
             }
         }
+        return false
     }
+
 }

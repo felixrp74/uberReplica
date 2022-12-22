@@ -1,6 +1,7 @@
 package com.felixdeveloperand.uber.service
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.*
 import android.content.Context
 import android.content.Intent
@@ -13,6 +14,7 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import com.felixdeveloperand.uber.R
+import com.felixdeveloperand.uber.util.Constants
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -38,6 +40,7 @@ class LocationService : Service() {
         TODO("Not yet implemented")
     }
 
+    @SuppressLint("MissingPermission")
     fun startLocationService(){
 //        val channelId = "location_notification_channel"
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -84,23 +87,6 @@ class LocationService : Service() {
         mLocationRequest.fastestInterval = 0
         mLocationRequest.numUpdates = 1
 
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return
-        }
         LocationServices.getFusedLocationProviderClient(this)
             .requestLocationUpdates(
             mLocationRequest,
@@ -112,5 +98,25 @@ class LocationService : Service() {
 //        ACTION STOP LOCATION stopLocationService
 //        startForeground()
 
+    }
+    fun stopLocationService(){
+        LocationServices.getFusedLocationProviderClient(this)
+            .removeLocationUpdates(mLocationCallback)
+        stopForeground(true)
+        stopSelf()
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent != null){
+            var action: String? = intent.action
+            if(action.isNullOrBlank()){
+                if (action.equals(Constants.ACTION_START_LOCATION)){
+                    startLocationService()
+                }else if (action.equals(Constants.ACTION_STOP_LOCATION)){
+                    stopLocationService()
+                }
+            }
+        }
+        return super.onStartCommand(intent, flags, startId)
     }
 }
