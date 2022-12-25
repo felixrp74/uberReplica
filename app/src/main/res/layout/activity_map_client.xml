@@ -25,8 +25,15 @@
         android:textSize="36sp"
         android:textStyle="bold"/>
     <Button
-        android:id="@+id/btnLocation"
+        android:id="@+id/btnStartLocation"
         android:text="start locaiton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/btnStopLocation"
+        android:text="stop locaiton"
+        android:layout_centerVertical="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 

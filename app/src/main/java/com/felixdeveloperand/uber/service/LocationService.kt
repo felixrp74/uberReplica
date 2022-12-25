@@ -25,7 +25,7 @@ class LocationService : Service() {
         override fun onLocationResult(locationResult: LocationResult) {
             val latitude:Double = locationResult.lastLocation.latitude
             val longitude:Double = locationResult.lastLocation.longitude
-            Log.d("LOCATION UPDATE", "$latitude , $longitude")
+            Log.d("LOCATION_UPDATE", "$latitude , $longitude")
         }
     }
 
@@ -40,7 +40,6 @@ class LocationService : Service() {
         TODO("Not yet implemented")
     }
 
-    @SuppressLint("MissingPermission")
     fun startLocationService(){
 //        val channelId = "location_notification_channel"
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -87,6 +86,23 @@ class LocationService : Service() {
         mLocationRequest.fastestInterval = 0
         mLocationRequest.numUpdates = 1
 
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return
+        }
         LocationServices.getFusedLocationProviderClient(this)
             .requestLocationUpdates(
             mLocationRequest,
