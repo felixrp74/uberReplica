@@ -82,10 +82,7 @@
             android:enabled="true"
             android:exported="false"
             />
-        <service android:name=".service.LocationUpdateService"
-            android:enabled="true"
-            android:exported="false"
-            />
+        <service android:name=".service.LocationUpdateService"/>
     </application>
 
 </manifest>

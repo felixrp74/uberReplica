@@ -1,57 +1,71 @@
 package com.felixdeveloperand.uber.activities.client
 
 import android.Manifest
+import android.R
+import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.felixdeveloperand.uber.databinding.ActivityMapClientBinding
 import com.felixdeveloperand.uber.service.LocationDTO
+import com.felixdeveloperand.uber.service.LocationUpdateService
 import com.felixdeveloperand.uber.util.Constants
 import com.felixdeveloperand.uber.util.showToast
 import com.google.android.gms.location.*
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import java.util.concurrent.TimeUnit
 
 
 class MapClientActivity : AppCompatActivity(), OnMapReadyCallback {
+
     private lateinit var map: GoogleMap
     private lateinit var binding:ActivityMapClientBinding
-
-    private lateinit var locationRequest: LocationRequest
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    private lateinit var locationCallback: LocationCallback
-    private var currentLocation: Location? = null
-
-    val LOCATION_REQUEST_CODE = 1
+    private var latitud:Double = 28.044195
+    private var longitud:Double = -16.5363842
+    private var favoritePlace = LatLng(28.044195, -16.5363842 )
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: LocationUpdateEvent?) {
-    //handle updates here
-//        event.getLocation().latitude
-        val latitud = event?.getLocation()?.latitude
-        val longitud = event?.getLocation()?.longitude
+        //handle updates here
+        latitud = event?.getLocation()?.latitude?: 12.044195
+        longitud = event?.getLocation()?.longitude ?: -16.5363842
+        Log.d("location_felix_main", "ON MESSAGE EVENT: $latitud and $longitud")
 
+        map.addMarker(MarkerOptions().position(LatLng(latitud, longitud)))
 
-        Log.d("location_felix_main", "$latitud and $longitud")
+    /*
+
+        val latLng = LatLng(latitud, longitud)
+        val markerOptions = MarkerOptions()
+        markerOptions.position(latLng)
+        map.clear()
+        markerOptions.title("${latitud.toString()} and ${longitud.toString()}")
+        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))
+        markerOptions.position
+        map.addMarker(markerOptions)
+*/
+
     }
 
     override fun onStart() {
         super.onStart()
-        Log.d("location_felix_main", "EVENT BUS REGISTRADO")
+        Log.d("location_felix_main", "ON START")
         EventBus.getDefault().register(this)
     }
 
     override fun onStop() {
         super.onStop()
-        Log.d("location_felix_main", "EVENT BUS UNREGISTRADO")
+        Log.d("location_felix_main", "ON STOP")
         EventBus.getDefault().unregister(this)
     }
 
@@ -59,7 +73,9 @@ class MapClientActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         binding = ActivityMapClientBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        onMessageEvent(LocationUpdateEvent(LocationDTO()))
+
+        createMapFragment()
+        Log.d("location_felix_main", "ON CREATE")
 
         binding.btnStartLocation.setOnClickListener {
 
@@ -71,17 +87,19 @@ class MapClientActivity : AppCompatActivity(), OnMapReadyCallback {
                 ActivityCompat.requestPermissions(
                     this@MapClientActivity,
                     arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                    LOCATION_REQUEST_CODE
+                    Constants.SERVICE_LOCATION_REQUEST_CODE
                 )
+                showToast("PERMISO GARANTIZADO ")
             }else{
+                startService(Intent(applicationContext, LocationUpdateService::class.java))
                 showToast("HAY AMO SE ACABO PREFIERO ")
-//                startLocationService()
             }
         }
 
         binding.btnStopLocation.setOnClickListener {
-//            stopLocationService()
+            stopService(Intent(applicationContext, LocationUpdateService::class.java))
         }
+
     }
 
     override fun onRequestPermissionsResult(
@@ -90,7 +108,7 @@ class MapClientActivity : AppCompatActivity(), OnMapReadyCallback {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == LOCATION_REQUEST_CODE && grantResults.isNotEmpty()){
+        if (requestCode == Constants.SERVICE_LOCATION_REQUEST_CODE && grantResults.isNotEmpty()){
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
 //                startLocationService()
             }else{
@@ -99,41 +117,25 @@ class MapClientActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    private fun isPermissionAccessCoarseLocationApproved():Boolean{
-        val permissionAccessCoarseLocationApproved = ActivityCompat.checkSelfPermission(
-            this,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) ==
-                PackageManager.PERMISSION_GRANTED
-
-        if (permissionAccessCoarseLocationApproved) {
-//            startService()
-        } else {
-            // Make a request for foreground-only location access.
-            ActivityCompat.requestPermissions(
-                this, arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ),
-                Constants.LOCATION_SERVICE_REQUEST_TAG
-            )
-        }
-        return permissionAccessCoarseLocationApproved
-    }
     override fun onMapReady(googleMap: GoogleMap) {
+        Log.d("location_felix_main", "ON MAP READY")
         map = googleMap
+        onMessageEvent(LocationUpdateEvent(LocationDTO()))
 
-        locationRequest = LocationRequest.create().apply {
-            interval = TimeUnit.SECONDS.toMillis(60)
-
-            fastestInterval = TimeUnit.SECONDS.toMillis(30)
-
-            maxWaitTime = TimeUnit.MINUTES.toMillis(2)
-
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        }
-
-        val favoritePlace = LatLng(28.044195,-16.5363842)
-
+    }
+    private fun createMapFragment() {
+        Log.d("location_felix_main", "CREATE MAP FRAGMENT")
+        val mapFragment = supportFragmentManager.findFragmentById(com.felixdeveloperand.uber.R.id.fragmentMap) as SupportMapFragment
+        mapFragment.getMapAsync(this)
+    }
+    private fun createMarker(latLng: LatLng) {
+        Log.d("location_felix_main", "CREATE MARKER")
+        map.addMarker(MarkerOptions().position(latLng))
+        map.animateCamera(
+            CameraUpdateFactory.newLatLngZoom(latLng, 12f),
+            4000,
+            null
+        )
     }
 }
 
