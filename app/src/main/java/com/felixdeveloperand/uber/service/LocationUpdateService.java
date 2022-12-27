@@ -13,7 +13,6 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
@@ -63,16 +62,6 @@ public class LocationUpdateService extends Service {
 
         }
     };
-    //Location Callback
-//    private final LocationCallback locationCallback = new LocationCallback() {
-//        @Override
-//        public void onLocationResult(@NonNull LocationResult locationResult) {
-//            super.onLocationResult(locationResult);
-//            Location currentLocation = locationResult.getLastLocation();
-//            Log.d("Locations", currentLocation.getLatitude() + "," + currentLocation.getLongitude());
-//            //Share/Publish Location
-//        }
-//    };
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -133,3 +122,4 @@ public class LocationUpdateService extends Service {
 
     }
 }
+

@@ -13,7 +13,4 @@ object Constants{
     const val SERVICE_LOCATION_REQUEST_CODE = 0
     const val LOCATION_SERVICE_NOTIF_ID = 2
 
-//    SERVICE_LOCATION_REQUEST_CODE
-//    fun obtenerPI() = 3.1416
 }
-//println(constantes.PI)

@@ -1,11 +1,15 @@
 package com.felixdeveloperand.uber.activities.client
 
 import android.Manifest
-import android.R
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Point
 import android.os.Bundle
+import android.os.Handler
+import android.os.SystemClock
 import android.util.Log
+import android.view.animation.Interpolator
+import android.view.animation.LinearInterpolator
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.felixdeveloperand.uber.databinding.ActivityMapClientBinding
@@ -13,18 +17,13 @@ import com.felixdeveloperand.uber.service.LocationDTO
 import com.felixdeveloperand.uber.service.LocationUpdateService
 import com.felixdeveloperand.uber.util.Constants
 import com.felixdeveloperand.uber.util.showToast
-import com.google.android.gms.location.*
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-
 
 class MapClientActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -32,7 +31,7 @@ class MapClientActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var binding:ActivityMapClientBinding
     private var latitud:Double = 28.044195
     private var longitud:Double = -16.5363842
-    private var favoritePlace = LatLng(28.044195, -16.5363842 )
+    private var marker:Marker? = null
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: LocationUpdateEvent?) {
@@ -40,8 +39,10 @@ class MapClientActivity : AppCompatActivity(), OnMapReadyCallback {
         latitud = event?.getLocation()?.latitude?: 12.044195
         longitud = event?.getLocation()?.longitude ?: -16.5363842
         Log.d("location_felix_main", "ON MESSAGE EVENT: $latitud and $longitud")
-
+        map.clear()
         map.addMarker(MarkerOptions().position(LatLng(latitud, longitud)))
+
+//        animateMarker( marker!!, LatLng(latitud,longitud),true)
 
     /*
 
@@ -53,7 +54,7 @@ class MapClientActivity : AppCompatActivity(), OnMapReadyCallback {
         markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))
         markerOptions.position
         map.addMarker(markerOptions)
-*/
+    */
 
     }
 
@@ -92,12 +93,18 @@ class MapClientActivity : AppCompatActivity(), OnMapReadyCallback {
                 showToast("PERMISO GARANTIZADO ")
             }else{
                 startService(Intent(applicationContext, LocationUpdateService::class.java))
+                //verificar su correcto funcionamiento de isMyLocationEnabled
+                map.isMyLocationEnabled = true
                 showToast("HAY AMO SE ACABO PREFIERO ")
             }
         }
 
         binding.btnStopLocation.setOnClickListener {
             stopService(Intent(applicationContext, LocationUpdateService::class.java))
+        }
+
+        binding.btnFloatingLocation.setOnClickListener {
+            zoomMyPosition(LatLng(latitud, longitud))
         }
 
     }
@@ -111,6 +118,7 @@ class MapClientActivity : AppCompatActivity(), OnMapReadyCallback {
         if (requestCode == Constants.SERVICE_LOCATION_REQUEST_CODE && grantResults.isNotEmpty()){
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
 //                startLocationService()
+
             }else{
                 showToast("Permission denied.")
             }
@@ -120,23 +128,53 @@ class MapClientActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         Log.d("location_felix_main", "ON MAP READY")
         map = googleMap
+
         onMessageEvent(LocationUpdateEvent(LocationDTO()))
 
     }
+
     private fun createMapFragment() {
         Log.d("location_felix_main", "CREATE MAP FRAGMENT")
         val mapFragment = supportFragmentManager.findFragmentById(com.felixdeveloperand.uber.R.id.fragmentMap) as SupportMapFragment
         mapFragment.getMapAsync(this)
     }
-    private fun createMarker(latLng: LatLng) {
+
+    private fun zoomMyPosition(latLng: LatLng) {
         Log.d("location_felix_main", "CREATE MARKER")
-        map.addMarker(MarkerOptions().position(latLng))
+//        map.addMarker(MarkerOptions().position(latLng))
         map.animateCamera(
             CameraUpdateFactory.newLatLngZoom(latLng, 12f),
             4000,
             null
         )
     }
+
+    fun animateMarker(marker: Marker, toPosition: LatLng, hideMarker: Boolean) {
+        val handler = Handler()
+        val start = SystemClock.uptimeMillis()
+        val proj: Projection = map.projection
+        val startPoint: Point = proj.toScreenLocation(marker.position)
+        val startLatLng: LatLng = proj.fromScreenLocation(startPoint)
+        val duration: Long = 500
+        val interpolator: Interpolator = LinearInterpolator()
+        handler.post(object : Runnable {
+            override fun run() {
+                val elapsed = SystemClock.uptimeMillis() - start
+                val t: Float = interpolator.getInterpolation(elapsed.toFloat() / duration)
+                val lng = t * toPosition.longitude + (1 - t) * startLatLng.longitude
+                val lat = t * toPosition.latitude + (1 - t) * startLatLng.latitude
+                marker.position = LatLng(lat, lng)
+                if (t < 1.0) {
+                    // Post again 16ms later.
+                    handler.postDelayed(this, 16)
+                } else {
+                    marker.isVisible = !hideMarker
+                }
+            }
+        })
+    }
+
+
 }
 
 class LocationUpdateEvent(locationUpdate: LocationDTO) {
