@@ -36,13 +36,13 @@
         android:textStyle="bold"/>
     <Button
         android:id="@+id/btnStartLocation"
-        android:text="start locaiton"
+        android:text="@string/start_location"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
     <Button
         android:id="@+id/btnStopLocation"
-        android:text="stop locaiton"
+        android:text="@string/stop_location"
         android:layout_centerVertical="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
@@ -53,7 +53,10 @@
         android:layout_alignParentBottom="true"
         android:src="@drawable/ic_baseline_my_location_24"
         android:layout_gravity="end|bottom"
+        app:elevation="8dp"
+        android:layout_margin="30dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/my_location" />
 
 </RelativeLayout>

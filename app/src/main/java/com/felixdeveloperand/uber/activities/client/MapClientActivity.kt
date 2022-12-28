@@ -29,9 +29,8 @@ class MapClientActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var map: GoogleMap
     private lateinit var binding:ActivityMapClientBinding
-    private var latitud:Double = 28.044195
-    private var longitud:Double = -16.5363842
-    private var marker:Marker? = null
+    private var latitud:Double = -15.835389
+    private var longitud:Double = -70.0213067
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: LocationUpdateEvent?) {
@@ -40,7 +39,8 @@ class MapClientActivity : AppCompatActivity(), OnMapReadyCallback {
         longitud = event?.getLocation()?.longitude ?: -16.5363842
         Log.d("location_felix_main", "ON MESSAGE EVENT: $latitud and $longitud")
         map.clear()
-        map.addMarker(MarkerOptions().position(LatLng(latitud, longitud)))
+
+//        map.addMarker(MarkerOptions().position(LatLng(latitud, longitud)))
 
 //        animateMarker( marker!!, LatLng(latitud,longitud),true)
 
@@ -79,7 +79,6 @@ class MapClientActivity : AppCompatActivity(), OnMapReadyCallback {
         Log.d("location_felix_main", "ON CREATE")
 
         binding.btnStartLocation.setOnClickListener {
-
             if (ActivityCompat.checkSelfPermission(
                     this,
                     Manifest.permission.ACCESS_FINE_LOCATION
@@ -128,7 +127,7 @@ class MapClientActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         Log.d("location_felix_main", "ON MAP READY")
         map = googleMap
-
+        zoomMyPosition(LatLng(latitud,longitud))
         onMessageEvent(LocationUpdateEvent(LocationDTO()))
 
     }
@@ -143,35 +142,10 @@ class MapClientActivity : AppCompatActivity(), OnMapReadyCallback {
         Log.d("location_felix_main", "CREATE MARKER")
 //        map.addMarker(MarkerOptions().position(latLng))
         map.animateCamera(
-            CameraUpdateFactory.newLatLngZoom(latLng, 12f),
+            CameraUpdateFactory.newLatLngZoom(latLng, 16f),
             4000,
             null
         )
-    }
-
-    fun animateMarker(marker: Marker, toPosition: LatLng, hideMarker: Boolean) {
-        val handler = Handler()
-        val start = SystemClock.uptimeMillis()
-        val proj: Projection = map.projection
-        val startPoint: Point = proj.toScreenLocation(marker.position)
-        val startLatLng: LatLng = proj.fromScreenLocation(startPoint)
-        val duration: Long = 500
-        val interpolator: Interpolator = LinearInterpolator()
-        handler.post(object : Runnable {
-            override fun run() {
-                val elapsed = SystemClock.uptimeMillis() - start
-                val t: Float = interpolator.getInterpolation(elapsed.toFloat() / duration)
-                val lng = t * toPosition.longitude + (1 - t) * startLatLng.longitude
-                val lat = t * toPosition.latitude + (1 - t) * startLatLng.latitude
-                marker.position = LatLng(lat, lng)
-                if (t < 1.0) {
-                    // Post again 16ms later.
-                    handler.postDelayed(this, 16)
-                } else {
-                    marker.isVisible = !hideMarker
-                }
-            }
-        })
     }
 
 

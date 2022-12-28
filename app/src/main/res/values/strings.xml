@@ -2,4 +2,7 @@
     <string name="app_name">Uber</string>
     <string name="marca_del_vehiculo">Marca del vehiculo</string>
     <string name="placa_del_vehiculo">Placa del vehiculo</string>
+    <string name="start_location">Start location</string>
+    <string name="stop_location">Stop location</string>
+    <string name="my_location">My Location</string>
 </resources>
