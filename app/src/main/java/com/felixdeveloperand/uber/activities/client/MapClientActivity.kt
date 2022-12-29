@@ -147,8 +147,6 @@ class MapClientActivity : AppCompatActivity(), OnMapReadyCallback {
             null
         )
     }
-
-
 }
 
 class LocationUpdateEvent(locationUpdate: LocationDTO) {

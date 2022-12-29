@@ -7,7 +7,7 @@
     android:orientation="vertical"
     tools:context=".activities.client.MapClientActivity">
 
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+    <fragment
         xmlns:map="http://schemas.android.com/apk/res-auto"
         android:id="@+id/fragmentMap"
         android:name="com.google.android.gms.maps.SupportMapFragment"
@@ -24,28 +24,32 @@
         map:uiZoomGestures="true"
         tools:context=".activities.client.MapClientActivity" />
 
-    <TextView
-        android:id="@+id/inteli"
-
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/buttonWrapper"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Aun no se activado permiso de localizacion!"
-        android:padding="4dp"
-        android:layout_centerInParent="true"
-        android:textSize="36sp"
-        android:textStyle="bold"/>
-    <Button
-        android:id="@+id/btnStartLocation"
-        android:text="@string/start_location"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="590dp"
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/btnStopLocation"
-        android:text="@string/stop_location"
-        android:layout_centerVertical="true"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        <Button
+            android:id="@+id/btnStopLocation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_weight="1"
+            android:text="@string/stop_location" />
+
+        <Button
+            android:id="@+id/btnStartLocation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_weight="1"
+            android:text="@string/start_location" />
+    </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnFloatingLocation"
