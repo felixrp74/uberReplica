@@ -2,14 +2,10 @@ package com.felixdeveloperand.uber.activities.client
 
 import android.Manifest
 import android.content.Intent
+import android.content.IntentSender
 import android.content.pm.PackageManager
-import android.graphics.Point
 import android.os.Bundle
-import android.os.Handler
-import android.os.SystemClock
 import android.util.Log
-import android.view.animation.Interpolator
-import android.view.animation.LinearInterpolator
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.felixdeveloperand.uber.databinding.ActivityMapClientBinding
@@ -17,10 +13,14 @@ import com.felixdeveloperand.uber.service.LocationDTO
 import com.felixdeveloperand.uber.service.LocationUpdateService
 import com.felixdeveloperand.uber.util.Constants
 import com.felixdeveloperand.uber.util.showToast
+import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationSettingsRequest
+import com.google.android.gms.location.LocationSettingsResponse
+import com.google.android.gms.location.SettingsClient
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.tasks.Task
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -31,6 +31,11 @@ class MapClientActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var binding:ActivityMapClientBinding
     private var latitud:Double = -15.835389
     private var longitud:Double = -70.0213067
+
+    val builder = LocationSettingsRequest.Builder()
+    val client: SettingsClient = LocationServices.getSettingsClient(this)
+    val task: Task<LocationSettingsResponse> = client.checkLocationSettings(builder.build())
+    val REQUEST_CHECK_SETTINGS = 0x1
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: LocationUpdateEvent?) {
@@ -103,7 +108,31 @@ class MapClientActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         binding.btnFloatingLocation.setOnClickListener {
-            zoomMyPosition(LatLng(latitud, longitud))
+
+            // https://www.develou.com/ubicacion-android-google-play-services/
+
+            task.addOnSuccessListener { locationSettingsResponse ->
+                // All location settings are satisfied. The client can initialize
+                // location requests here.
+                // ...
+                zoomMyPosition(LatLng(latitud, longitud))
+            }
+
+            task.addOnFailureListener { exception ->
+                if (exception is ResolvableApiException){
+                    // Location settings are not satisfied, but this can be fixed
+                    // by showing the user a dialog.
+                    try {
+                        // Show the dialog by calling startResolutionForResult(),
+                        // and check the result in onActivityResult().
+                        exception.startResolutionForResult(this@MapClientActivity,
+                            REQUEST_CHECK_SETTINGS)
+                    } catch (sendEx: IntentSender.SendIntentException) {
+                        // Ignore the error.
+                    }
+                }
+            }
+
         }
 
     }
